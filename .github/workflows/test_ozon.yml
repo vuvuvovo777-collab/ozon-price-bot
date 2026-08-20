@@ -1,0 +1,40 @@
+name: Test Ozon Parser
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Test Ozon search
+        run: |
+          python - <<'PY'
+          from ozon_parser import search_cheapest
+
+          products = search_cheapest("кофе 1 кг", 5)
+
+          print("\n===== РЕЗУЛЬТАТ =====\n")
+
+          if not products:
+              print("ТОВАРЫ НЕ НАЙДЕНЫ")
+          else:
+              for i, product in enumerate(products, 1):
+                  print(f"{i}. {product.get('title')}")
+                  print(f"Цена: {product.get('price')}")
+                  print(f"Фото: {product.get('image')}")
+                  print(f"Ссылка: {product.get('url')}")
+                  print("-" * 50)
+          PY
